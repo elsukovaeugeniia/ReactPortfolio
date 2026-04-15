@@ -30,12 +30,21 @@ jobs:
         run: npm ci
 
       - name: Build project
-        run: npm run build
+        run: |
+          npm run build
+          # Проверяем размер артефакта
+          echo "Artifact size:"
+          du -sh dist/
+
+      - name: Clean artifact (remove symlinks)
+        run: |
+          find dist -type l -delete
+          echo "Removed symlinks from dist/"
 
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4
         with:
-          name: github-pages  # Важно: имя должно совпадать с artifact_name в deploy-pages
+          name: github-pages
           path: ./dist
           retention-days: 1
 
@@ -43,6 +52,7 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
         with:
-          artifact_name: github-pages  # Должно совпадать с именем в upload-artifact
+          artifact_name: github-pages
+
 
 
